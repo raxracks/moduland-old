@@ -1,6 +1,6 @@
 function submit() {
-    const module_name = document.getElementById("module_name").value; 
-    const repository = document.getElementById("repository").value;
+    const module_name = document.getElementById("module_name").value.trim(); 
+    const repository = document.getElementById("repository").value.trim();
     if(validate_input(module_name, repository)) {
         const split = repository.split("/");
         const name = split[0];
@@ -22,7 +22,8 @@ function submit() {
 
 function validate_input(name, repo) {
     return (
-        name.trim().length > 0 &&
+        name.length > 0 &&
+        !name.includes(" ") &&
         repo.split("/").length == 2 &&
         !repo.startsWith("https://") &&
         !repo.endsWith(".com")

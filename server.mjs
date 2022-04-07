@@ -21,6 +21,14 @@ app.get("/pkg/:pkg_name", (req, res) => {
     res.sendFile(__dirname + "/views/pkg.html");
 });
 
+app.get("/pkg/:pkg_name/versions", (req, res) => {
+    res.sendFile(__dirname + "/views/versions.html");
+});
+
+app.get("/pkg/:pkg_name/:version", (req, res) => {
+    res.sendFile(__dirname + "/views/pkg.html");
+});
+
 app.get("/add_pkg/:pkg_name/:name/:repo", (req, res) => {
     jsonfile.readFile("database/packages.json", (read_error, packages) => {
         if(read_error) return res.send({"status": "failed", "reason": "db_read_error"});
