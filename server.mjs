@@ -1,26 +1,40 @@
 import fetch from 'node-fetch';
 import express from 'express';
 import jsonfile from 'jsonfile';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
 const app = express();
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+app.use(express.static("static"));
 
 app.get("/", (req, res) => {
-    res.send("Under construction");
+    res.sendFile(__dirname + "/views/index.html");
+});
+
+app.get("/add_module", (req, res) => {
+    res.sendFile(__dirname + "/views/add_module.html");
 });
 
 app.get("/pkg/:pkg_name", (req, res) => {
-    jsonfile.readFile("database/packages.json", (read_error, packages) => {
-        if(!packages[req.params.pkg_name]) return res.send("not found");
-        res.send(packages[req.params.pkg_name]);
-    });
+    res.sendFile(__dirname + "/views/pkg.html");
 });
 
 app.get("/add_pkg/:pkg_name/:name/:repo", (req, res) => {
     jsonfile.readFile("database/packages.json", (read_error, packages) => {
-        packages[req.params.pkg_name] = {"name": req.params.name, "repo": req.params.repo};
+        if(read_error) return res.send({"status": "failed", "reason": "db_read_error"});
+        
+        if(!packages[req.params.pkg_name]) {
+            packages[req.params.pkg_name] = {"name": req.params.name, "repo": req.params.repo};
 
-        jsonfile.writeFile("database/packages.json", packages, (write_error) => {
-
-        });
+            jsonfile.writeFile("database/packages.json", packages, (write_error) => {
+                if(!write_error) return res.send({"url": `/pkg/${req.params.pkg_name}`, "status": "success"});
+                return res.send({"status": "failed", "reason": "db_write_error"});
+            });
+        } else {
+            return res.send({"status": "failed", "reason": "already_exists"});
+        }
     });
 });
 
@@ -44,6 +58,13 @@ app.get("/fetch_versions/:name", (req, res) => {
     });
 });
 
+app.get("/pkg_info/:pkg_name", (req, res) => {
+    jsonfile.readFile("database/packages.json", (read_error, packages) => {
+        if(!packages[req.params.pkg_name]) return res.send("not found");
+        res.send(packages[req.params.pkg_name]);
+    });
+});
+
 app.get("/fetch_pkg/:name", (req, res) => {
     const name = req.params.name;
 
@@ -52,6 +73,12 @@ app.get("/fetch_pkg/:name", (req, res) => {
             res.send({"url": `https://github.com/${packages[name].name}/${packages[name].repo}`, "status": "success"});
         else
             res.send({"status": "failed", "reason": "not_found"});
+    });
+});
+
+app.get("/fetch_modules", (req, res) => {
+    jsonfile.readFile("database/packages.json", (error, packages) => {
+        res.send(packages);
     });
 });
 
