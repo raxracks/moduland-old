@@ -12,6 +12,7 @@ function load() {
     const pkg_name = split[split.length - 2];
 
     document.getElementById("module_name").innerText = pkg_name;
+    document.getElementById("back").href = `/pkg/${pkg_name}`;
 
     fetch(`/fetch_versions/${pkg_name}`).then(response => {
         response.json().then(tags => {
