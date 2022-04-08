@@ -16,6 +16,7 @@ function load() {
 
     fetch(`/fetch_versions/${pkg_name}`).then(response => {
         response.json().then(tags => {
+            document.getElementById("versions").innerText = "";
             tags.forEach(tag => {
                document.getElementById("versions").appendChild(gen_tag(pkg_name, tag)); 
             });

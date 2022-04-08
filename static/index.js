@@ -11,6 +11,7 @@ function gen_module(module_name) {
 function load_modules() {
     fetch("/fetch_modules").then(response => {
         response.json().then(modules => {
+            document.getElementById("modules").innerText = "";
             Object.keys(modules).forEach(module => {
                 document.getElementById("modules").appendChild(gen_module(module));
             });
