@@ -1,4 +1,5 @@
 function add_file(name, repo, tag, path) {
+    if(path.includes("/")) return;
     const div = document.createElement("div");
     div.classList.add("file");
     const a = document.createElement("a");
